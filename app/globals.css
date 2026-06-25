@@ -1,0 +1,215 @@
+/* Barnehage — Bauhaus theme
+   Palette + type extracted from "Barnehage Bauhaus.html":
+   primary blocks, thick black borders, hard offset shadows, geometric shapes,
+   Bricolage Grotesque (display) + Public Sans (UI), uppercase tracked labels. */
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;600;700&display=swap');
+
+:root {
+  --blue: #1f3df0;
+  --yellow: #ffcc00;
+  --red: #ff5a3c;
+  --teal: #1aa3a3;
+  --paper: #f5f1e8;
+  --ink: #111111;
+  --blue-tint: #c5cffb;
+  --green-tint: #d8e2c8;
+  --sky-tint: #bcd6e8;
+  --cream-tint: #fff8e6;
+  --white: #ffffff;
+
+  --border-w: 3px;
+  --border: var(--border-w) solid var(--ink);
+  --shadow: 5px 5px 0 var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+
+  --display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --ui: 'Public Sans', system-ui, -apple-system, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; line-height: 1; }
+
+/* --- Uppercase tracked label --- */
+.bh-label {
+  font-family: var(--ui);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* --- Header --- */
+.bh-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--blue);
+  color: var(--white);
+  border-bottom: var(--border);
+}
+.bh-header h1 {
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+/* Geometric Bauhaus shape cluster */
+.bh-shapes { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.bh-shape { width: 26px; height: 26px; border: 2px solid var(--ink); }
+.bh-shape--sq { background: var(--yellow); }
+.bh-shape--circle { background: var(--red); border-radius: 50%; }
+.bh-shape--tri {
+  width: 0; height: 0; border: none;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 26px solid var(--paper);
+}
+
+/* --- Controls bar --- */
+.bh-controls {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+  background: var(--paper);
+  border-bottom: var(--border);
+}
+.bh-field { display: flex; flex-direction: column; gap: 4px; }
+.bh-field .bh-value { font-family: var(--display); font-weight: 800; font-size: 18px; }
+.bh-field--home { min-width: 240px; flex: 1; }
+.bh-home-label { font-size: 11px; font-family: var(--ui); font-weight: 400; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; display: inline-block; vertical-align: middle; }
+.bh-home-row { display: flex; gap: 6px; align-items: center; }
+.bh-input {
+  font-family: var(--ui);
+  font-size: 13px;
+  padding: 8px 10px;
+  border: var(--border);
+  background: var(--white);
+  flex: 1;
+  outline: none;
+  box-shadow: var(--shadow-sm);
+}
+.bh-input:focus { box-shadow: 4px 4px 0 var(--blue); }
+.bh-btn--sm { font-size: 12px; padding: 8px 12px; box-shadow: var(--shadow-sm); }
+.bh-error--inline { font-size: 11px; color: var(--red); font-weight: 700; margin-top: 2px; }
+.bh-controls input[type="range"] { accent-color: var(--blue); width: 150px; }
+.bh-updated { margin-left: auto; font-size: 12px; opacity: 0.7; }
+
+/* --- Bauhaus button --- */
+.bh-btn {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  background: var(--blue);
+  border: var(--border);
+  box-shadow: var(--shadow);
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+.bh-btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink); }
+.bh-btn:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+.bh-btn:disabled { background: var(--ink); opacity: 0.5; box-shadow: none; cursor: progress; }
+
+/* --- Layout panels --- */
+.bh-main { height: 100vh; display: flex; flex-direction: column; }
+.bh-body { flex: 1; display: flex; min-height: 0; }
+.bh-sidebar {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border-right: var(--border);
+}
+.bh-summary {
+  padding: 10px 16px;
+  background: var(--yellow);
+  border-bottom: var(--border);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.bh-scroll { flex: 1; overflow-y: auto; }
+.bh-map { flex: 1; }
+
+.bh-error {
+  padding: 12px 16px;
+  background: var(--red);
+  color: var(--white);
+  border-bottom: var(--border);
+  font-weight: 700;
+}
+
+/* --- Vacancy list --- */
+.bh-list { list-style: none; }
+.bh-item {
+  position: relative;
+  padding: 14px 14px 14px 22px;
+  border-bottom: var(--border);
+  cursor: pointer;
+  background: var(--white);
+}
+/* Rotating primary accent bar on the left edge */
+.bh-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 10px;
+  background: var(--accent, var(--blue));
+  border-right: 2px solid var(--ink);
+}
+.bh-item:hover { background: var(--cream-tint); }
+.bh-item--selected { background: var(--blue); color: var(--white); }
+.bh-item--selected .bh-item-meta { color: var(--cream-tint); }
+.bh-item--dim { opacity: 0.4; }
+.bh-item-name { font-family: var(--display); font-weight: 800; font-size: 17px; line-height: 1.1; }
+.bh-item-meta { font-size: 13px; margin-top: 3px; }
+.bh-tag {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--ink);
+  color: var(--white);
+}
+.bh-empty { padding: 20px 16px; font-weight: 600; }
+
+/* --- Route panel --- */
+.bh-route {
+  padding: 14px 16px;
+  border-top: var(--border);
+  background: var(--cream-tint);
+  font-size: 14px;
+}
+.bh-route h4 { font-family: var(--display); font-weight: 800; font-size: 17px; margin-bottom: 2px; }
+.bh-route-addr { font-size: 12px; opacity: 0.75; margin-bottom: 8px; }
+.bh-route-row { margin-top: 10px; }
+.bh-route-mode { font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+.bh-route-legs { margin-top: 2px; font-size: 13px; opacity: 0.85; }
+.bh-route a { color: var(--blue); font-weight: 700; text-decoration: underline; }
+.bh-chip {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid var(--ink);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.bh-chip--transit { background: var(--blue); }
+.bh-chip--car { background: var(--red); border-radius: 50%; }
