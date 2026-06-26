@@ -22,6 +22,7 @@ export default function Page() {
   const [route, setRoute] = useState<RouteResult | null>(null);
   const [routeLoading, setRouteLoading] = useState(false);
   const [home, setHome] = useState<HomeCoord>(HOME);
+  const [tab, setTab] = useState<'list' | 'map'>('list');
 
   const fetchVacancies = useCallback(async (refresh: boolean) => {
     setLoading(true); setError(null);
@@ -52,6 +53,7 @@ export default function Page() {
 
   const onSelect = useCallback(async (id: string) => {
     setSelectedId(id);
+    if (typeof window !== 'undefined' && window.innerWidth < 640) setTab('list');
     const v = all.find(x => x.id === id);
     if (!v || v.lat == null || v.lon == null) { setRoute(null); return; }
     setRouteLoading(true); setRoute(null);
@@ -80,8 +82,12 @@ export default function Page() {
         home={home} onHomeChange={h => { setHome(h); setRoute(null); }}
       />
       {error && <div className="bh-error">{error}</div>}
+      <div className="bh-tabs" role="tablist">
+        <button role="tab" className={`bh-tab${tab === 'list' ? ' bh-tab--active' : ''}`} onClick={() => setTab('list')}>Liste</button>
+        <button role="tab" className={`bh-tab${tab === 'map' ? ' bh-tab--active' : ''}`} onClick={() => setTab('map')}>Kart</button>
+      </div>
       <div className="bh-body">
-        <section className="bh-sidebar">
+        <section className={`bh-sidebar${tab === 'map' ? ' bh-panel--hidden' : ''}`}>
           <div className="bh-summary">
             Viser {shown.length} · {matchCount} passer {age} år
           </div>
@@ -90,7 +96,7 @@ export default function Page() {
           </div>
           <RoutePanel route={route} loading={routeLoading} vacancy={selected} />
         </section>
-        <section className="bh-map">
+        <section className={`bh-map${tab === 'list' ? ' bh-panel--hidden' : ''}`}>
           <MapView vacancies={shown} selectedId={selectedId} age={age} route={route} onSelect={onSelect} />
         </section>
       </div>

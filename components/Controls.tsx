@@ -15,6 +15,7 @@ export default function Controls({ age, onAgeChange, count, maxCount, onCountCha
   const [addressInput, setAddressInput] = useState('');
   const [geocoding, setGeocoding] = useState(false);
   const [geocodeError, setGeocodeError] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   async function handleSetHome() {
     const q = addressInput.trim();
@@ -28,6 +29,7 @@ export default function Controls({ age, onAgeChange, count, maxCount, onCountCha
       const { lat, lon, display_name } = data[0];
       onHomeChange({ lat: parseFloat(lat), lon: parseFloat(lon), label: display_name });
       setAddressInput('');
+      setSettingsOpen(false);
     } catch {
       setGeocodeError('Kunne ikke søke opp adressen');
     } finally {
@@ -35,11 +37,8 @@ export default function Controls({ age, onAgeChange, count, maxCount, onCountCha
     }
   }
 
-  return (
-    <div className="bh-controls">
-      <button className="bh-btn" onClick={onRefresh} disabled={loading}>
-        {loading ? 'Henter…' : 'Hent ledige barnehager'}
-      </button>
+  const secondary = (
+    <>
       <div className="bh-field">
         <span className="bh-label">Alder · <span className="bh-value">{age} år</span></span>
         <input type="range" min={0} max={6} value={age} onChange={e => onAgeChange(Number(e.target.value))} />
@@ -68,6 +67,30 @@ export default function Controls({ age, onAgeChange, count, maxCount, onCountCha
       {fetchedAt && <span className="bh-updated bh-label">
         Oppdatert: {new Date(fetchedAt).toLocaleString('no-NO')}
       </span>}
+    </>
+  );
+
+  return (
+    <div className="bh-controls">
+      {/* Primary row — always visible */}
+      <div className="bh-controls-primary">
+        <button className="bh-btn bh-btn--refresh" onClick={onRefresh} disabled={loading}>
+          {loading ? 'Henter…' : 'Hent ledige barnehager'}
+        </button>
+        {/* Toggle button — only rendered/used on mobile via CSS */}
+        <button
+          className="bh-controls-toggle"
+          onClick={() => setSettingsOpen(o => !o)}
+          aria-expanded={settingsOpen}
+        >
+          Innstillinger {settingsOpen ? '↑' : '↓'}
+        </button>
+      </div>
+
+      {/* Secondary controls — always shown on desktop, toggled on mobile */}
+      <div className={`bh-controls-secondary${settingsOpen ? ' bh-controls-secondary--open' : ''}`}>
+        {secondary}
+      </div>
     </div>
   );
 }
