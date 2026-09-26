@@ -46,10 +46,9 @@ export default function MapViewClient({ vacancies, selectedId, age, route, onSel
     <MapContainer center={[HOME.lat, HOME.lon]} zoom={12} style={{ height: '100%', width: '100%' }}>
       <FitBounds points={points} />
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-        subdomains="abcd"
-        maxZoom={20}
+        attribution='&copy; <a href="https://www.kartverket.no/">Kartverket</a>'
+        url="https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png"
+        maxZoom={18}
       />
       <CircleMarker center={[HOME.lat, HOME.lon]} radius={11}
         pathOptions={{ color: '#111', weight: 3, fillColor: '#ffcc00', fillOpacity: 1 }}>

@@ -6,12 +6,29 @@ export function slugFromUrl(url: string): string {
   return parts.length ? parts[parts.length - 1] : url;
 }
 
-export function parseAgeGroup(text: string): AgeGroup {
+// Collects every age mention in the text ("under 3", "over 3", "3–6 år",
+// "født 2024", "født 2021–2023") and classifies each; several distinct
+// groups → 'mixed'.
+export function parseAgeGroup(text: string, now: Date = new Date()): AgeGroup {
   const t = text.toLowerCase();
-  if (/under\s*3/.test(t)) return 'under3';
-  if (/\d\s*[–-]\s*\d/.test(t) || /født/.test(t)) return 'mixed';
-  if (/over\s*3/.test(t)) return 'over3';
-  return 'unknown';
+  const groups = new Set<AgeGroup>();
+  if (/under\s*3/.test(t)) groups.add('under3');
+  if (/over\s*3/.test(t)) groups.add('over3');
+  for (const m of t.matchAll(/(?<!\d)(\d)\s*[–-]\s*(\d)\s*år/g)) {
+    const lo = Number(m[1]), hi = Number(m[2]);
+    groups.add(hi < 3 ? 'under3' : lo >= 3 ? 'over3' : 'mixed');
+  }
+  // A child counts as small until July of the year they turn 3, so compare
+  // against the start year of the current barnehage year (August–July).
+  const bhYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+  for (const m of t.matchAll(/født\s*(?:i\s*)?(\d{4})(?:\s*[–-]\s*(\d{4}))?/g)) {
+    for (const y of [m[1], m[2] ?? m[1]]) {
+      groups.add(bhYear - Number(y) < 3 ? 'under3' : 'over3');
+    }
+  }
+  if (groups.size === 0) return 'unknown';
+  if (groups.size > 1) return 'mixed';
+  return [...groups][0];
 }
 
 function parseSpots(text: string): number | null {

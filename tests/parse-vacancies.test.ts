@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseVacancies } from '../lib/parse-vacancies';
+import { parseVacancies, parseAgeGroup } from '../lib/parse-vacancies';
 
 const HTML = `
 <h3>Bydel Alna (oppdatert 23. juni 2026)</h3>
@@ -38,12 +38,12 @@ describe('parseVacancies', () => {
     const v = parseVacancies(HTML).find(x => x.id === 'gransbakken-barnehage')!;
     expect(v.spots).toBe(2);
   });
-  it('detects under3 and birth-year (mixed) age groups', () => {
+  it('detects under3 age group and parses birth-year entries', () => {
     const borggata = parseVacancies(HTML).find(x => x.id === 'borggata-familiebarnehage')!;
     expect(borggata.ageGroup).toBe('under3');
     const gaia = parseVacancies(HTML).find(x => x.id === 'gaia-barnehage')!;
     expect(gaia.spots).toBe(1);
-    expect(gaia.ageGroup).toBe('mixed');
+    expect(gaia.rawAge).toContain('født i 2024');
   });
   it('strips a trailing colon when the ":" sits inside the <a> tag', () => {
     const html = `
@@ -52,6 +52,35 @@ describe('parseVacancies', () => {
     const v = parseVacancies(html)[0];
     expect(v.name).toBe('Læringsverkstedet Waldemars barnehage');
     expect(v.spots).toBe(1);
-    expect(v.ageGroup).toBe('mixed');
+  });
+});
+
+describe('parseAgeGroup', () => {
+  const now = new Date('2026-09-26');
+  it('classifies explicit under/over 3', () => {
+    expect(parseAgeGroup('2 ledige plasser for barn under 3 år', now)).toBe('under3');
+    expect(parseAgeGroup('2 plasser over 3 år, ledig fra september', now)).toBe('over3');
+  });
+  it('classifies age ranges by bounds', () => {
+    expect(parseAgeGroup('1 plass for barn 3–6 år, ledig fra september', now)).toBe('over3');
+    expect(parseAgeGroup('1 ledig plass for barn 3-5 år', now)).toBe('over3');
+    expect(parseAgeGroup('1 plass for barn 1–2 år', now)).toBe('under3');
+    expect(parseAgeGroup('2 plasser for barn 1–5 år', now)).toBe('mixed');
+  });
+  it('classifies birth year by barnehage year (small until July of year turning 3)', () => {
+    expect(parseAgeGroup('1 plass for barn født 2024', now)).toBe('under3');
+    expect(parseAgeGroup('1 plass for barn født i 2022', now)).toBe('over3');
+    expect(parseAgeGroup('1 plass for barn født 2023', now)).toBe('over3');
+    expect(parseAgeGroup('1 plass for barn født 2023', new Date('2026-05-01'))).toBe('under3');
+  });
+  it('classifies birth-year ranges by both ends', () => {
+    expect(parseAgeGroup('1 ledig plass for barn født 2021–2023', now)).toBe('over3');
+    expect(parseAgeGroup('1 ledig plass for barn født 2022–2024', now)).toBe('mixed');
+  });
+  it('multiple distinct groups → mixed', () => {
+    expect(parseAgeGroup('1 plass for barn 3–6 år, og 1 plass for barn født 2024, ledig fra september', now)).toBe('mixed');
+  });
+  it('no age info → unknown', () => {
+    expect(parseAgeGroup('1 ledig plass', now)).toBe('unknown');
   });
 });
